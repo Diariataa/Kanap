@@ -99,7 +99,7 @@ if(localStorageProduct === null || localStorageProduct === []){
     localStorage.setItem('products', JSON.stringify(localStorageProduct));
 
 }
-if(localStorageProduct.length > 0) {
+else if(localStorageProduct !== null) {  
     console.log(id)
     let article = localStorageProduct.find((article) => 
     article.id == id && article.color === color

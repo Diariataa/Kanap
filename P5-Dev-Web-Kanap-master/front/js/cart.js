@@ -3,49 +3,52 @@ let fullCart = []
 
 async function getId(){
     for( let products of localProduct){
-       // Creer le tableau pour afficher le panier
+    //   
+    await fetch('http://localhost:3000/api/products/'+ products.id)
+    .then((response) => response.json())
+    .then((data) =>{
+     //    Creer le tableau pour afficher le panier
         const product =  {
             id : products.id,
-            color :localProduct.color,
-            quantity: localProduct.quantity,
-            imageUrl: products.imageUrl ,
-            name: products.name,
-            price: products.price
+            color :products.color,
+            quantity: products.quantity,
+            imageUrl: data.imageUrl ,
+            name: data.name,
+            price: data.price
             }
             fullCart.push(product)
     
-    await fetch('http://localhost:3000/api/products/'+ products.id)
-    .then((response) => response.json())
-    .then((products) =>{
-        console.log(products)
-        displayCart(products)
+        
       })
+      
       .catch(function(error){
         return alert(error)
       })
       
-      }
+      } displayCart()
+      getTotals()
+      deleteItem();
     }
     
    
  getId();
 // Création de la fonction de l'affichage du panier
-function displayCart(products) {
+function displayCart() {
    if (localProduct.length == 0) {
         let emptyCart = document.getElementById('cart__items');
         emptyCart.innerHTML = 'Votre panier est vide'
     }else{
-        for (let i of localProduct){
+        for (let i of fullCart){
             document.getElementById('cart__items').innerHTML +=
-` <article class="cart__item" data-id="${products.id}" data-color="${i.color}">
+` <article class="cart__item" data-id="${i.id}" data-color="${i.color}">
 <div class="cart__item__img">
-  <img src="${products.imageUrl}" alt="${products.altTxt}">
+  <img src="${i.imageUrl}" alt="${i.altTxt}">
 </div>
 <div class="cart__item__content">
   <div class="cart__item__content__description">
-    <h2>${products.name}</h2>
+    <h2>${i.name}</h2>
     <p>${i.color}</p>
-    <p>${products.price}€</p>
+    <p>${i.price}€</p>
   </div>
   <div class="cart__item__content__settings">
     <div class="cart__item__content__settings__quantity">
@@ -71,7 +74,6 @@ function removeItem(e){
         localProduct = localProduct.filter(product => product.id !== article.dataset.id || product.color !== article.dataset.color);
         localStorage.setItem("products", JSON.stringify(localProduct));
         article.remove();
-        getTotals();
     }
     // Produit supprimé effectué
     
@@ -81,18 +83,18 @@ function deleteItem(){
             item.onclick = removeItem;
         } 
     }
-    deleteItem();
+    
 
 
 
-//////////////////// CHANGER QUANTITE DANS LE PANIER ////////////////////
+// //////////////////// CHANGER QUANTITE DANS LE PANIER ////////////////////
 
 function updateQuantity(e){
         let article = e.target.closest('article');
         let i = localProduct.findIndex(product => product.id === article.dataset.id && product.color === article.dataset.color);
         localProduct[i].quantity = parseInt(e.target.value);
         localStorage.setItem("products", JSON.stringify(localProduct));
-        getTotals();    
+       
     }
     // Appliquer la quantité modifié
     
@@ -109,19 +111,19 @@ function modifyQuantity(){
 function getTotals() {
         let totalQuantity = 0;
         let totalPrice = 0;
-        for (let i of localProduct) {
-            totalQuantity += parseInt(localProduct[i].quantity);
-            totalPrice += parseInt(localProduct[i].quantity) * parseInt(localProduct[i].price);
+        for (let i of fullCart) {
+            console.log(fullCart)
+            totalQuantity += parseInt(i.quantity);
+            totalPrice += parseInt(i.quantity) * parseInt(i.price);
         }
         document.getElementById('totalPrice').innerText = totalPrice;
         document.getElementById('totalQuantity').innerText = totalQuantity;
     }
-    getTotals();
     
 
 
 
-                                /////////////////////////FORMULAIRE/////////////////////////////////////
+//                                 /////////////////////////FORMULAIRE/////////////////////////////////////
 
 
     const firstName = document.getElementById('firstName');
@@ -133,7 +135,7 @@ function getTotals() {
 
 function form(){
 
-///*********************************** */ PRENOM *****************************************
+// ///*********************************** */ PRENOM *****************************************
 firstName.addEventListener('change', function(){
     validFirstName(this);
    
@@ -156,7 +158,7 @@ if(firstNameRe.test(inputFirstName.value)) {
     return false
 }
 }
-// ***************************************LAST NAME*****************************************
+// // ***************************************LAST NAME*****************************************
 lastName.addEventListener('change', function(){
     validLastName(this);
    
@@ -179,7 +181,7 @@ if(lastNameRe.test(inputLastName.value)) {
     return false
 }
 }
-// ******************************** ADRESSE***********************************************************
+// // ******************************** ADRESSE***********************************************************
 address.addEventListener('change', function(){
     validAddress(this);
    
@@ -202,7 +204,7 @@ if(addressRe.test(inputAddress.value)) {
     return false
 }
 }
-//**************************************** */  VILLE DONNEES  **********************************************
+// //**************************************** */  VILLE DONNEES  **********************************************
 city.addEventListener('change', function(){
     validCity(this);
    
@@ -226,7 +228,7 @@ if(cityRe.test(inputCity.value)) {
 }
 }
 
-// ********************************   Email  ************************************************
+// // ********************************   Email  ************************************************
 email.addEventListener('change', function(){
         validEmail(this);
        
@@ -252,20 +254,46 @@ if(emailRe.test(inputEmail.value)) {
 form();
 
 
-//***************************************ORDER FORM */
-function order(){
-    let cartOrder = document.getElementById('cart__order__form')
-    cart.addEventListener('submit', (e))
-    e.preventDefault()
+// //***************************************ORDER FORM */
+// // function order(){
+// //     let cartOrder = document.getElementById('cart__order__form')
+// //     cart.addEventListener('submit', (e))
+// //     e.preventDefault()
+
+ 
 
 
-    fetch('http://localhost:3000/api/products')
-    .then((response) => response.json())
-    .then((data) => {
-        console.log()
-    })
-    .catch(err){
-        alert(err)
-    }
-}
-order()
+
+
+// //     fetch('http://localhost:3000/api/products',{
+// //         method : 'post',
+
+// //     })
+// //     .then((response) => response.json())
+//     .then((data) => {
+//         console.log()
+//     })
+//     .catch((err){
+//         alert(err)
+//     })
+// }
+// order()
+
+// const validInput = function(input, msg, regex){
+//     let emailRe = new RegExp(regex)
+   
+//    let emailErrorMsg = document.getElementById('emailErrorMsg')
+//    if(emailRe.test(input.value)) {
+//        emailErrorMsg.innerHTML = msg
+//        emailErrorMsg.classList.remove('text-danger')
+//        emailErrorMsg.classList.add('text-success')
+//        return true
+   
+//    }else{
+//        emailErrorMsg.innerHTML = msg
+//        emailErrorMsg.classList.remove('text-success')
+//        emailErrorMsg.classList.add('text-danger')
+//        return false
+//    }
+
+//    add validInput (inputMail, "Votre email est invalide", "^[a-zA-Z]+ [a-zA-Z]+$, 'g'")
