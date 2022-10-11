@@ -10,7 +10,7 @@ fetch('http://localhost:3000/api/products/')
   return console.log(error)
    
 })
-
+// Creer la fonction d'affichage des kanap
 function createElement(data){
   for(let i of data){
      document.getElementById('items').innerHTML += `<a href="./product.html?id=${i._id}">

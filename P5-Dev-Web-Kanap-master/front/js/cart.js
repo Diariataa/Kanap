@@ -73,7 +73,9 @@ function removeItem(e){
         let article = e.target.closest('article');
         localProduct = localProduct.filter(product => product.id !== article.dataset.id || product.color !== article.dataset.color);
         localStorage.setItem("products", JSON.stringify(localProduct));
+        fullCart = fullCart.filter(product => product.id !== article.dataset.id || product.color !== article.dataset.color);
         article.remove();
+        getTotals()
     }
     // Produit supprimé effectué
     
@@ -94,6 +96,9 @@ function updateQuantity(e){
         let i = localProduct.findIndex(product => product.id === article.dataset.id && product.color === article.dataset.color);
         localProduct[i].quantity = parseInt(e.target.value);
         localStorage.setItem("products", JSON.stringify(localProduct));
+        fullCart[i].quantity = parseInt(e.target.value);
+
+        getTotals()
        
     }
     // Appliquer la quantité modifié
@@ -136,15 +141,19 @@ function getTotals() {
 function form(){
 
 // ///*********************************** */ PRENOM *****************************************
+
+
 firstName.addEventListener('change', function(){
+    firstNameErrorMsg.innerHTML = ''
     validFirstName(this);
    
 })
 
 const validFirstName = function(inputFirstName){
-let firstNameRe = new RegExp(/^[a-z]+[ \-']?[[a-z]+[ \-']?]*[a-z]+$, 'g'/)
+let firstNameRe = new RegExp(/^(?=.{2,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/)
 
 let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
+console.log(firstNameRe.test(inputFirstName.value))
 if(firstNameRe.test(inputFirstName.value)) {
     firstNameErrorMsg.innerHTML = 'Prénom valide'
     firstNameErrorMsg.classList.remove('text-danger')
@@ -165,7 +174,7 @@ lastName.addEventListener('change', function(){
 })
 
 const validLastName = function(inputLastName){
-let lastNameRe = new RegExp(/[a-z]+[ \-']?[[a-z]+[ \-']?]*[a-z]+$, 'g'/)
+let lastNameRe = new RegExp(/[a-z]+[ \-']?[[a-z]+[ \-']?]*[a-z]+$/)
 
 let lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
 if(lastNameRe.test(inputLastName.value)) {
@@ -188,7 +197,7 @@ address.addEventListener('change', function(){
 })
 
 const validAddress = function(inputAddress){
-let addressRe = new RegExp(/^([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*), 'g'/)
+let addressRe = new RegExp(/^([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*)/)
 
 let addressErrorMsg = document.getElementById('addressErrorMsg')
 if(addressRe.test(inputAddress.value)) {
@@ -211,7 +220,7 @@ city.addEventListener('change', function(){
 })
 
 const validCity = function(inputCity){
-let cityRe = new RegExp(/([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$, 'g'/)
+let cityRe = new RegExp(/([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/)
 let cityErrorMsg = document.getElementById('cityErrorMsg')
 
 if(cityRe.test(inputCity.value)) {
@@ -235,7 +244,7 @@ email.addEventListener('change', function(){
 })
 
 const validEmail = function(inputEmail){
- let emailRe = new RegExp(/^[A-Za-z0-9-_\.]+@([A-Za-z0-9-_]+\.)+[A-Za-z]{2,5}$, 'g'/)
+ let emailRe = new RegExp(/^[A-Za-z0-9-_\.]+@([A-Za-z0-9-_]+\.)+[A-Za-z]{2,5}$/)
 
 let emailErrorMsg = document.getElementById('emailErrorMsg')
 if(emailRe.test(inputEmail.value)) {
@@ -256,47 +265,47 @@ form();
 
 //***************************************ORDER FORM */
 function order(){
-    let cartOrder = document.getElementById('cart__order__form')
-    cartOrder.addEventListener('submit', (e))
-    if (document.getElementById('order')){
-    e.preventDefault()
-// recuperation des donnees du formulaire et panier
+    let cartOrder = document.getElementById('order')
+    cartOrder.addEventListener('click', function(e){
 
-let productsId = []
-for (let product of localStorage){
-    productsId.push(product.id)
-
-}
-    const contact = {
-        firstName : firstName.value,
-        lastName : lastName.value,
-        city: city.value,
-        address : address.value,
-        email: email.value
-    }
-    fetch('http://localhost:3000/api/products/order',{
-        method : 'post',
-        headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(contact, productsId)
-        })
-    .then((response) => response.json())
-    .then((data) => {
-        document.location.href = `confirmation.html=$(data)`
+        if (document.getElementById('order')){
+            e.preventDefault()
+        // recuperation des donnees du formulaire et panier
+        
+        let products = []
+        for (let product of localProduct){
+            products.push(product.id)
+        
+        }
+            const contact = {
+                firstName : firstName.value,
+                lastName : lastName.value,
+                address : address.value,
+                city: city.value,
+                email: email.value
+            }
+        console.log(contact, products)
+        fetch('http://localhost:3000/api/products/order',{
+                method : 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({contact, products})
+                })
+            .then((response) => response.json())
+             .then((data) => {
+                console.log(data)
+               document.location.href = `confirmation.html?order=${data.orderId}`
+            
+            })
+            .catch((err)=> {
+                alert(err)
+            })
+        
+        }})}
     
-    })
-    .catch((err)=> {
-        alert(err)
-    })
-
-}}
-order();
-
-
-
-
-
+order()
 
 
 
