@@ -142,7 +142,7 @@ firstName.addEventListener('change', function(){
 })
 
 const validFirstName = function(inputFirstName){
-let firstNameRe = new RegExp(/^[a-zA-Z]+ [a-zA-Z]+$, 'g'/)
+let firstNameRe = new RegExp(/^[a-z]+[ \-']?[[a-z]+[ \-']?]*[a-z]+$, 'g'/)
 
 let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
 if(firstNameRe.test(inputFirstName.value)) {
@@ -165,7 +165,7 @@ lastName.addEventListener('change', function(){
 })
 
 const validLastName = function(inputLastName){
-let lastNameRe = new RegExp(/^[a-zA-Z]+ [a-zA-Z]+$, 'g'/)
+let lastNameRe = new RegExp(/[a-z]+[ \-']?[[a-z]+[ \-']?]*[a-z]+$, 'g'/)
 
 let lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
 if(lastNameRe.test(inputLastName.value)) {
@@ -188,7 +188,7 @@ address.addEventListener('change', function(){
 })
 
 const validAddress = function(inputAddress){
-let addressRe = new RegExp(/^[a-zA-Z0-9\s,'-]*$, 'g'/)
+let addressRe = new RegExp(/^([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*), 'g'/)
 
 let addressErrorMsg = document.getElementById('addressErrorMsg')
 if(addressRe.test(inputAddress.value)) {
@@ -211,7 +211,7 @@ city.addEventListener('change', function(){
 })
 
 const validCity = function(inputCity){
-let cityRe = new RegExp(/^[a-zA-Z]+ [a-zA-Z]+$, 'g'/)
+let cityRe = new RegExp(/([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$, 'g'/)
 let cityErrorMsg = document.getElementById('cityErrorMsg')
 
 if(cityRe.test(inputCity.value)) {
@@ -235,7 +235,7 @@ email.addEventListener('change', function(){
 })
 
 const validEmail = function(inputEmail){
- let emailRe = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$, 'g'/)
+ let emailRe = new RegExp(/^[A-Za-z0-9-_\.]+@([A-Za-z0-9-_]+\.)+[A-Za-z]{2,5}$, 'g'/)
 
 let emailErrorMsg = document.getElementById('emailErrorMsg')
 if(emailRe.test(inputEmail.value)) {
@@ -267,7 +267,7 @@ for (let product of localStorage){
     productsId.push(product.id)
 
 }
-    const order = {
+    const contact = {
         firstName : firstName.value,
         lastName : lastName.value,
         city: city.value,
@@ -279,7 +279,7 @@ for (let product of localStorage){
         headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(order, productsId)
+          body: JSON.stringify(contact, productsId)
         })
     .then((response) => response.json())
     .then((data) => {
@@ -305,20 +305,20 @@ order();
 
 
 // const validInput = function(input, msg, regex){
-//     let emailRe = new RegExp(regex)
+//     let Re = new RegExp(regex)
    
-//    let emailErrorMsg = document.getElementById('emailErrorMsg')
-//    if(emailRe.test(input.value)) {
-//        emailErrorMsg.innerHTML = msg
-//        emailErrorMsg.classList.remove('text-danger')
-//        emailErrorMsg.classList.add('text-success')
+//    let ErrorMsg = document.getElementById('emailErrorMsg')
+//    if(Re.test(input.value)) {
+//        ErrorMsg.innerHTML = msg
+//        ErrorMsg.classList.remove('text-danger')
+//        ErrorMsg.classList.add('text-success')
 //        return true
    
 //    }else{
-//        emailErrorMsg.innerHTML = msg
-//        emailErrorMsg.classList.remove('text-success')
-//        emailErrorMsg.classList.add('text-danger')
+//        ErrorMsg.innerHTML = msg
+//        ErrorMsg.classList.remove('text-success')
+//        ErrorMsg.classList.add('text-danger')
 //        return false
 //    }
-
-//    add validInput (inputMail, "Votre email est invalide", "^[a-zA-Z]+ [a-zA-Z]+$, 'g'")
+// }
+// validInput (inputMail, "Votre email est invalide", "^[a-zA-Z]+ [a-zA-Z]+$, 'g'")
