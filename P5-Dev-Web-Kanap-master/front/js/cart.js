@@ -254,30 +254,55 @@ if(emailRe.test(inputEmail.value)) {
 form();
 
 
-// //***************************************ORDER FORM */
-// // function order(){
-// //     let cartOrder = document.getElementById('cart__order__form')
-// //     cart.addEventListener('submit', (e))
-// //     e.preventDefault()
+//***************************************ORDER FORM */
+function order(){
+    let cartOrder = document.getElementById('cart__order__form')
+    cartOrder.addEventListener('submit', (e))
+    if (document.getElementById('order')){
+    e.preventDefault()
+// recuperation des donnees du formulaire et panier
 
- 
+let productsId = []
+for (let product of localStorage){
+    productsId.push(product.id)
+
+}
+    const order = {
+        firstName : firstName.value,
+        lastName : lastName.value,
+        city: city.value,
+        address : address.value,
+        email: email.value
+    }
+    fetch('http://localhost:3000/api/products/order',{
+        method : 'post',
+        headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(order, productsId)
+        })
+    .then((response) => response.json())
+    .then((data) => {
+        document.location.href = `confirmation.html=$(data)`
+    
+    })
+    .catch((err)=> {
+        alert(err)
+    })
+
+}}
+order();
 
 
 
 
-// //     fetch('http://localhost:3000/api/products',{
-// //         method : 'post',
 
-// //     })
-// //     .then((response) => response.json())
-//     .then((data) => {
-//         console.log()
-//     })
-//     .catch((err){
-//         alert(err)
-//     })
-// }
-// order()
+
+
+
+
+
+
 
 // const validInput = function(input, msg, regex){
 //     let emailRe = new RegExp(regex)
